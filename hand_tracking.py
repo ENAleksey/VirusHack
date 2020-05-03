@@ -6,7 +6,7 @@ import math
 camera = cv2.VideoCapture(0)
 width = int(camera.get(3))
 height = int(camera.get(4))
-isBgCaptured = 0
+isBgCaptured = 1
 bgSubThreshold = 50
 learningRate = 0
 
@@ -95,5 +95,5 @@ while(camera.isOpened()):
         cv2.destroyAllWindows()
         break
     elif k == ord('b'):
-        bgModel = cv2.createBackgroundSubtractorMOG2(0, bgSubThreshold)
+        # bgModel = cv2.createBackgroundSubtractorMOG2(0, bgSubThreshold)
         isBgCaptured = 1
