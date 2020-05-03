@@ -1,17 +1,15 @@
 from vosk import Model, KaldiRecognizer
-import sys
-import os
-import wave
 import datetime as dt
 from fuzzywuzzy import fuzz
 import pyaudio
+import re
 
 
 class Command:
-    def __init__(self, synonyms, action, stream):
+    def __init__(self, synonyms, action, writing_stream):
         self.synonyms = synonyms
         self.action = action
-        self.stream = stream
+        self.stream = writing_stream
 
     @staticmethod
     def get_eventID():
@@ -26,8 +24,7 @@ class Command:
 
     def recognize(self, phrase):
         for word in self.synonyms:
-            if fuzz.ratio(word, phrase) >= 75:
-                print(fuzz.ratio(word, phrase))
+            if fuzz.ratio(word, phrase) >= 80:
                 return True
         return False
 
@@ -35,34 +32,51 @@ class Command:
 class addItem(Command):
     def form_message(self, params):
         message = Command.form_message(self)
-        message['itemCode'] = params['itemCode'] if 'itemCode' in params else -1
-        message['quantity'] = params['quantity'] if 'quantity' in params else 1
+        message['itemCode'] = params.get('itemCode') or -1
+        message['quantity'] = params.get('quantity') or 1
         return message
 
 
+class addLoyalty(Command):
+    def form_message(self, params):
+        message = Command.form_message(self)
+        message['itemCode'] = params.get('itemCode') or -1
+        message['type'] = params.get('type') or -1
+        return message
+
+
+class cancel(Command):
+    def form_message(self, params):
+        message = Command.form_message(self)
+        return message
+
+
+def check_command(phrase):
+    test = addItem(['добавить', 'добавь'], 'addItem', '')
+    phrase = phrase.split()
+    for word in phrase:
+        if test.recognize(word):
+            print(test.form_message({'itemCode': 123}))
+    return
+
+
 p = pyaudio.PyAudio()
-stream = p.open(format=pyaudio.paInt16, channels=1, rate=16000, input=True, frames_per_buffer=8000)
+CHANNELS = 1
+RATE = 16000
+CHUNK = 8000
+stream = p.open(format=pyaudio.paInt16, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=CHUNK)
 stream.start_stream()
 
 model = Model("models/ru")
-rec = KaldiRecognizer(model, 16000)
-pr = ""
+rec = KaldiRecognizer(model, RATE)
 while True:
-    data = stream.read(4000)
+    data = stream.read(CHUNK)
     if len(data) == 0:
         break
     if rec.AcceptWaveform(data):
         temp = rec.Result()
-        temp = temp[temp.find("text"):]
-        temp = temp[temp.find(":") + 3:]
-        pr = temp[:temp.find(r'"')]
-        print(pr)
+        temp = re.findall(r'"text" : ".*"', temp)
+        temp = ''.join(temp)[10:-1]
+        check_command(temp)
     else:
         print(rec.PartialResult())
-
-print(rec.FinalResult())
-test = addItem(['жили', 'хусев'], 'addItem', '')
-pr = pr.split()
-for p in pr:
-    if test.recognize(p):
-        print(test.form_message({'itemCode': 123}))
