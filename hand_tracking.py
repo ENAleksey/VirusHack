@@ -42,7 +42,7 @@ def isHandInRect(frame, x, y, w, h):
 
             angle = math.acos((b**2 + c**2 - a**2)/(2*b*c)) * 57
 
-            if angle <= 60:
+            if angle <= 90:
                 count_defects += 1
 
     return count_defects > 1
