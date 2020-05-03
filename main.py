@@ -9,7 +9,6 @@ for phrase in LiveSpeech(): print(phrase)
 # import cv2
 # import imutils
 # import numpy as np
-
 # # global variables
 # bg = None
 
