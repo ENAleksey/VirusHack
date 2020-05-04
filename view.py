@@ -15,12 +15,12 @@ class Screen:
 
 approveScreen = Screen(
     'Подтверждение ассистентом',
-    'screens/10.jpg'
+    'screens/12.jpg'
 )
 
 cancelScreen = Screen(
     'Отмена покупки',
-    '',
+    'screens/10.jpg',
     [
         (commands.cancel, approveScreen),
     ]
