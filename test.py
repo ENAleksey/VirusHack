@@ -1,6 +1,6 @@
 from vosk import Model, KaldiRecognizer
 import pyaudio
-import re
+import json
 
 import commands
 from view import View
@@ -18,41 +18,54 @@ if commands.addItem.recognize('добавить'):
 
 # View & Screen example
 view = View()
-
-# while True:
-phrase = 'начнём'  # recognize speech here
-for cmd, transition in view.screen.commands:
-    print(cmd, transition, cmd.recognize(phrase))
-    if cmd.recognize(phrase):
-        if cmd.pushable:
-            print(cmd.get_message())  # we can write to a file or to a queue
-        view.set_screen(transition)
-        break
-
-exit(1)
-#################
-
 p = pyaudio.PyAudio()
 CHANNELS = 1
 RATE = 16000
 CHUNK = 8000
-stream = p.open(format=pyaudio.paInt16,
-                channels=CHANNELS,
-                rate=RATE,
-                input=True,
-                frames_per_buffer=CHUNK)
-stream.start_stream()
+audio_stream = p.open(format=pyaudio.paInt16,
+                      channels=CHANNELS,
+                      rate=RATE,
+                      input=True,
+                      frames_per_buffer=CHUNK)
+audio_stream.start_stream()
 
 model = Model("models/ru")
 rec = KaldiRecognizer(model, RATE)
+phrase = []
+
 while True:
-    data = stream.read(CHUNK)
+    data = audio_stream.read(CHUNK)
     if len(data) == 0:
         break
     if rec.AcceptWaveform(data):
         temp = rec.Result()
-        temp = re.findall(r'"text" : ".*"', temp)
-        temp = ''.join(temp)[10:-1]
-        # check_command(temp)
+        if temp:
+            temp = json.loads(temp)
+            phrase = temp['text'].split()
     else:
         print(rec.PartialResult())
+    if phrase:
+        for word in phrase:
+            for cmd, transition in view.screen.commands:
+                print(cmd, transition, cmd.recognize(word))
+                if cmd.recognize(word):
+                    if cmd.pushable:
+                        print(cmd.get_message())  # we can write to a file or to a queue
+                    view.set_screen(transition)
+                    break
+        phrase = []
+
+# exit(1)
+#################
+
+# while True:
+#     data = stream.read(CHUNK)
+#     if len(data) == 0:
+#         break
+#     if rec.AcceptWaveform(data):
+#         temp = rec.Result()
+#         temp = re.findall(r'"text" : ".*"', temp)
+#         temp = ''.join(temp)[10:-1]
+#         # check_command(temp)
+#     else:
+#         print(rec.PartialResult())
