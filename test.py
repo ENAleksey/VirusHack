@@ -3,6 +3,7 @@ import pyaudio
 import re
 
 import commands
+from view import View
 
 # command usage example
 if commands.addItem.recognize('добавить'):
@@ -10,10 +11,26 @@ if commands.addItem.recognize('добавить'):
     m1 = commands.addItem.get_message(itemCode=1201249)
     m2 = commands.addItem.get_message(itemCode=42613, quantity=3)
 
-    stream.write(str(m1))  # use json.dump() instead of str
+    stream.write(str(m1))  # use json.dump() instead of str()
     stream.write('\n')
     stream.write(str(m2))
 
+
+# View & Screen example
+view = View()
+
+# while True:
+phrase = 'начнём'  # recognize speech here
+for cmd, transition in view.screen.commands:
+    print(cmd, transition, cmd.recognize(phrase))
+    if cmd.recognize(phrase):
+        if cmd.pushable:
+            print(cmd.get_message())  # we can write to a file or to a queue
+        view.set_screen(transition)
+        break
+
+exit(1)
+#################
 
 p = pyaudio.PyAudio()
 CHANNELS = 1
