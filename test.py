@@ -31,7 +31,7 @@ audio_stream.start_stream()
 
 model = Model("models/ru")
 rec = KaldiRecognizer(model, RATE)
-phrase = ""
+phrase = []
 
 while True:
     data = audio_stream.read(CHUNK)
@@ -39,19 +39,21 @@ while True:
         break
     if rec.AcceptWaveform(data):
         temp = rec.Result()
-        temp = json.loads(temp)
-        phrase = ''.join([x['word'] for x in temp['result']])
+        if temp:
+            temp = json.loads(temp)
+            phrase = temp['text'].split()
     else:
         print(rec.PartialResult())
-    # phrase = 'начнём'  # recognize speech here
-    if phrase != "":
-        for cmd, transition in view.screen.commands:
-            print(cmd, transition, cmd.recognize(phrase))
-            if cmd.recognize(phrase):
-                if cmd.pushable:
-                    print(cmd.get_message())  # we can write to a file or to a queue
-                view.set_screen(transition)
-                break
+    if phrase:
+        for word in phrase:
+            for cmd, transition in view.screen.commands:
+                print(cmd, transition, cmd.recognize(word))
+                if cmd.recognize(word):
+                    if cmd.pushable:
+                        print(cmd.get_message())  # we can write to a file or to a queue
+                    view.set_screen(transition)
+                    break
+        phrase = []
 
 # exit(1)
 #################
