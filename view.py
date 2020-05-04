@@ -77,27 +77,59 @@ paymentСanselScreen = Screen(
     'screens/26.jpg'
 )
 
-cancelScreen.add_commands([
-    (commands.cancel, addItemScreen),
-    (commands.changeTopper, approveScreen),
-    (commands.cancel.expand(['да']), approveScreen),
-    (commands.cancel.expand(['нет']), addItemScreen),
-    (commands.returnAddItem, addItemScreen)
-])
-
-addItemScreen.add_commands([
-    (commands.addItem, None),
-    (commands.deletePosition, None),
-    (commands.deleteAll, None),
-    (commands.payment, addBagScreen),
-    (commands.subTotal, addBagScreen),
-    (commands.cancel, cancelScreen)
-])
 
 startScreen.add_commands([
+    (None, None), # ????? Сдвинуть кнопку start в другой угол
     (commands.start, addItemScreen)
 ])
 
+addItemScreen.add_commands([
+    (commands.cancel, cancelScreen),
+    (commands.payment, addBagScreen)
+    # (commands.addItem, None),
+    # (commands.deletePosition, None),
+    # (commands.deleteAll, None),
+    # (commands.subTotal, addBagScreen),
+])
+
+cancelScreen.add_commands([
+    (commands.back, addItemScreen), # ??? returnAddItem
+    # (commands.returnAddItem, addItemScreen), ??
+    # (commands.changeTopper, approveScreen), ?? Што ето
+    (commands.cancel.expand(['да']), approveScreen), # ???? убрать отсюда, approveScreen - это отмена чека
+    # (commands.cancel.expand(['нет']), addItemScreen), ??
+])
+
+addBagScreen.add_commands([
+    (commands.back, addItemScreen),
+    (commands.subTotal, conclusionScreen),
+    (commands.deletePosition, None), # ???? Удалить пакет
+    (commands.addItem, None), # Добавить пакет
+])
+
+conclusionScreen.add_commands([
+    # (commands.cancel, cancelScreen), # ???? Выйти понлостью
+    (commands.returnAddItem, addItemScreen), # Вернуться к корзине
+    (commands.payment, paymentScreen),
+    (commands.addLoyalty, loyaltyScreen),
+    (commands.sellingMode, None), # Добавить ещё экран с тремя кнопками: отменить (вверху), карта или наличка (зовём Галю) (внизу)
+])
+
+loyaltyScreen.add_commands([
+    (commands.cancel, conclusionScreen) # Cancel или Back?
+    # добавить ещё команды
+])
+
+paymentScreen.add_commands([
+    (commands.deleteTransaction, conclusionScreen), # Нозад
+    # Дальшу у меня уже перестала работать голова
+    (commands.cancel, cancelScreen),
+    (commands.payment, paymentBankScreen),
+    # (commands.changeTopper, approveScreen)
+])
+
+
+# Добавить обработку этих трёх
 addWeightItemScreen.add_commands([
     (commands.addItem, None),
     (commands.cancel, addItemScreen)
@@ -106,31 +138,6 @@ addWeightItemScreen.add_commands([
 addReadyMealItemScreen.add_commands([
     (commands.addItem, None),
     (commands.cancel, addItemScreen)
-])
-
-addBagScreen.add_commands([
-    (commands.addItem, None),
-    (commands.cancel, conclusionScreen),
-    (commands.subTotal, conclusionScreen)
-])
-
-conclusionScreen.add_commands([
-    (commands.addLoyalty, loyaltyScreen),
-    (commands.payment, paymentScreen),
-    (commands.returnAddItem, addItemScreen),
-    (commands.sellingMode, addItemScreen),
-    (commands.cancel, cancelScreen)
-])
-
-loyaltyScreen.add_commands([
-    (commands.cancel, conclusionScreen)
-])
-
-paymentScreen.add_commands([
-    (commands.deleteTransaction, conclusionScreen),
-    (commands.payment, paymentBankScreen),
-    (commands.cancel, cancelScreen),
-    (commands.changeTopper, approveScreen)
 ])
 
 paymentСanselScreen.add_commands([
@@ -155,7 +162,7 @@ class View:
                 self.im = cv2.imread(self.screen.image)
                 self._changed = False
             cv2.imshow('view', self.im)
-            cv2.waitKey(1000)
+            cv2.waitKey(40)
 
     def set_screen(self, screen):
         if screen is not None:

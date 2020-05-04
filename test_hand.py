@@ -27,34 +27,35 @@ def renderDebugView(rectId):
 
     if screens > 0:
         cmd, transition = view.screen.commands[0]
-        cv2.putText(camera_debug, cmd.action, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
-        cv2.rectangle(camera_debug, (200,200), (000,000), colorGreen, 2)
-
+        if cmd:
+            cv2.rectangle(camera_debug, (200,200), (000,000), colorGreen, 2)
+            cv2.putText(camera_debug, cmd.action, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
     if screens > 1:
         cmd, transition = view.screen.commands[1]
-        cv2.putText(camera_debug, cmd.action, (50+width-200, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
-        cv2.rectangle(camera_debug, (width,200), (width-200,0), colorGreen, 2)
-
+        if cmd:
+            cv2.rectangle(camera_debug, (width,200), (width-200,0), colorGreen, 2)
+            cv2.putText(camera_debug, cmd.action, (10+width-200, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
     if screens > 2:
         cmd, transition = view.screen.commands[2]
-        cv2.putText(camera_debug, cmd.action, (50, 50+height-200), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
-        cv2.rectangle(camera_debug, (200,height), (0,height-200), colorGreen, 2)
-
+        if cmd:
+            cv2.rectangle(camera_debug, (200,height), (0,height-200), colorGreen, 2)
+            cv2.putText(camera_debug, cmd.action, (10, 50+height-200), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
     if screens > 3:
         cmd, transition = view.screen.commands[3]
-        cv2.putText(camera_debug, cmd.action, (50+width-200, 50+height-200), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
-        cv2.rectangle(camera_debug, (width,height), (width-200,height-200), colorGreen, 2)
-
+        if cmd:
+            cv2.rectangle(camera_debug, (width,height), (width-200,height-200), colorGreen, 2)
+            cv2.putText(camera_debug, cmd.action, (10+width-200, 50+height-200), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
+        
     if rectId == 0:
-        cv2.putText(camera_debug, "Top Left", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
+        cv2.putText(camera_debug, "Top Left", (250, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
     elif rectId == 1:
-        cv2.putText(camera_debug, "Top Right", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
+        cv2.putText(camera_debug, "Top Right", (250, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
     elif rectId == 2:
-        cv2.putText(camera_debug, "Bottom Left", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
+        cv2.putText(camera_debug, "Bottom Left", (250, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
     elif rectId == 3:
-        cv2.putText(camera_debug, "Bottom Right", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
+        cv2.putText(camera_debug, "Bottom Right", (250, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
     else:
-        cv2.putText(camera_debug, "Nothing", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
+        cv2.putText(camera_debug, "Nothing", (250, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, 0, 2, cv2.LINE_AA)
 
     cv2.imshow('Camera', camera_debug)
 
@@ -86,7 +87,7 @@ while(camera.isOpened()):
                     currTime = time.time()
                 else:
                     # if cmd:
-                    #     print(cmd.get_message())
+                    #     print(cmd.get_message()) # Крашится! Лёха, пофикси!
                     view.set_screen(transition)
                     endTime = None
                     prevRectId = rectId
