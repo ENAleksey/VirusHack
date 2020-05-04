@@ -12,6 +12,10 @@ class Screen:
         self.image = image
         self.commands = commands
 
+    def add_commands(self, commands):
+        self.commands = commands
+
+
 
 approveScreen = Screen(
     'Подтверждение ассистентом',
@@ -20,28 +24,121 @@ approveScreen = Screen(
 
 cancelScreen = Screen(
     'Отмена покупки',
-    'screens/10.jpg',
-    [
-        (commands.cancel, approveScreen),
-    ]
+    'screens/10.jpg'
 )
 
 addItemScreen = Screen(
     'Добавление товаров',
-    'screens/3.jpg',
-    [
-        (commands.addItem, None),
-        (commands.cancel, cancelScreen)
-    ]
+    'screens/3.jpg'
 )
 
 startScreen = Screen(
     'Начальный экран',
-    'screens/1.jpg',
-    [
-        (commands.start, addItemScreen)
-    ]
+    'screens/1.jpg'
 )
+
+addWeightItemScreen = Screen(
+    'Товар на вес',
+    'screens/6.jpg'
+)
+
+addReadyMealItemScreen = Screen(
+    'Выбор товара',
+    'screens/8.jpg'
+)
+
+addBagScreen = Screen(
+    'Добавление пакетов',
+    'screens/11.jpg'
+)
+
+conclusionScreen = Screen(
+    'Подытог',
+    'screens/13.jpg'
+)
+
+loyaltyScreen = Screen(
+    'Выбор скидки',
+    'screens/14.jpg'
+)
+
+paymentScreen = Screen(
+    'Итого к оплате',
+    'screens/2.jpg'
+)
+
+paymentBankScreen = Screen(
+    'Итого к оплате',
+    'screens/15.jpg'
+)
+
+paymentСanselScreen = Screen(
+    'Итого к оплате',
+    'screens/26.jpg'
+)
+
+cancelScreen.add_commands([
+    (commands.cancel, addItemScreen),
+    (commands.changeTopper, approveScreen),
+    (commands.cancel.expand(['да']), approveScreen),
+    (commands.cancel.expand(['нет']), addItemScreen),
+    (commands.returnAddItem, addItemScreen)
+])
+
+addItemScreen.add_commands([
+    (commands.addItem, None),
+    (commands.deletePosition, None),
+    (commands.deleteAll, None),
+    (commands.payment, addBagScreen),
+    (commands.subTotal, addBagScreen),
+    (commands.cancel, cancelScreen)
+])
+
+startScreen.add_commands([
+    (commands.start, addItemScreen)
+])
+
+addWeightItemScreen.add_commands([
+    (commands.addItem, None),
+    (commands.cancel, addItemScreen)
+])
+
+addReadyMealItemScreen.add_commands([
+    (commands.addItem, None),
+    (commands.cancel, addItemScreen)
+])
+
+addBagScreen.add_commands([
+    (commands.addItem, None),
+    (commands.cancel, conclusionScreen),
+    (commands.subTotal, conclusionScreen)
+])
+
+conclusionScreen.add_commands([
+    (commands.addLoyalty, loyaltyScreen),
+    (commands.payment, paymentScreen),
+    (commands.returnAddItem, addItemScreen),
+    (commands.sellingMode, addItemScreen),
+    (commands.cancel, cancelScreen)
+])
+
+loyaltyScreen.add_commands([
+    (commands.cancel, conclusionScreen)
+])
+
+paymentScreen.add_commands([
+    (commands.deleteTransaction, conclusionScreen),
+    (commands.payment, paymentBankScreen),
+    (commands.cancel, cancelScreen),
+    (commands.changeTopper, approveScreen)
+])
+
+paymentСanselScreen.add_commands([
+    (commands.deleteTransaction, conclusionScreen),
+    (commands.payment, paymentBankScreen),
+    (commands.cancel, cancelScreen),
+    (commands.changeTopper, approveScreen)
+])
 
 
 class View:
@@ -68,12 +165,3 @@ class View:
 
     def destroy(self):
         self._loop = False
-
-
-if __name__ == '__main__':
-    from time import sleep
-    view = View()
-    sleep(2)
-    view.set_screen(addItemScreen)
-    sleep(2)
-    view.destroy()

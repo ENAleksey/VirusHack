@@ -85,8 +85,8 @@ while(camera.isOpened()):
                 if currTime < endTime:
                     currTime = time.time()
                 else:
-                    if cmd:
-                        print(cmd.get_message())
+                    # if cmd:
+                    #     print(cmd.get_message())
                     view.set_screen(transition)
                     endTime = None
                     prevRectId = rectId
