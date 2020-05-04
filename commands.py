@@ -70,7 +70,7 @@ addItem = Command('addItem',
 addLoyalty = Command('addLoyalty',
                      ['itemCode'],
                      ['type'],
-                     ['???'])
+                     ['Промокод'])
 
 
 cancel = Command('cancel',
@@ -78,7 +78,78 @@ cancel = Command('cancel',
                  [],
                  ['отменить', 'назад'])
 
+deletePosition = Command('deletePosition',
+                 ['itemNumber'],
+                 [],
+                 ['удалить позицию', 'удалить товар'])
+
+deleteAll = Command('deleteAll',
+                 ['itemCode'],
+                 [],
+                 ['удалить всё', 'удалить все товары', 'очистить покупки', 'очистить список'])
+
+deleteTransaction = Command('deleteTransaction',
+                 [],
+                 [],
+                 ['отменить оплату', 'назад'])
+
+changeTopper = Command('changeTopper',
+                 [],
+                 [],
+                 ['вызов ассистента'])
+
+extInfo = Command('extInfo',
+                 ['info'],
+                 [],
+                 ['дополнительная информация', 'добавить информацию'])
+
+payment = Command('payment',
+                 ['paymentType'],
+                 ['amount', 'loyaltyRedempti onType', 'contacts'],
+                 ['оплата', 'оплатить'])
+
+printReport = Command('printReport',
+                 ['reportType'],
+                 [],
+                 [])
+
+returnAddItem = Command('returnAddItem',
+                 [],
+                 [],
+                 ['добавить еще', 'вернуться к добавлению'])
+
+sellingMode = Command('sellingMode',
+                 [],
+                 [],
+                 ['режим покупок', 'покупки'])
+
+setContact = Command('setContact',
+                 ['contact'],
+                 [],
+                 [])
+
+subTotal = Command('subTotal',
+                 [],
+                 [],
+                 ['посмотреть итог', 'подытог'])
+
+validateUser = Command('validateUser',
+                 ['userId', 'password'],
+                 [],
+                 ['аутентификация'])
+
+
+subscribe = Command('subscribe',
+                 ['type', 'frequency'],
+                 [],
+                 [])
+
+unsubscribe = Command('unsubscribe',
+                 ['type'],
+                 [],
+                 [])
+
 
 start = StubCommand('start', ['начать', 'запуск', 'старт', 'начнем'])
 
-
+stop = StubCommand('stop', ['завершить', 'стоп'])
