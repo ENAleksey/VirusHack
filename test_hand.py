@@ -2,6 +2,7 @@ from hand_tracking import getRectIdFromHandPos
 import cv2
 import commands
 from view import View
+import time
 
 # camera = cv2.VideoCapture("http://192.168.100.12:8080/video")
 camera = cv2.VideoCapture(0)
@@ -10,7 +11,8 @@ height = int(camera.get(4))
 view = View()
 
 prevRectId = None
-prevScreen = None
+currTime = None
+endTime = None
 
 isBgCaptured = 0
 bgSubThreshold = 50
@@ -46,31 +48,41 @@ while(camera.isOpened()):
     rectId = getRectIdFromHandPos(frame, width, height)
     if rectId is not None:
         if rectId != prevRectId:
-            prevRectId = rectId
+        #     prevRectId = rectId
             if rectId < len(view.screen.commands):
                 cmd, transition = view.screen.commands[rectId]
                 if transition:
-                    print()
-                    view.set_screen(transition)
-                    print("Текущий экран: " + view.screen.name)
-                    for cmd, transition in view.screen.commands:
-                        print(cmd.action + " " + transition.name if transition else "None")
+
+                    if endTime is None:
+                        currTime = time.time()
+                        endTime = currTime + 0.5
+
+                    if currTime < endTime:
+                        currTime = time.time()
+                    else:
+                        print()
+                        view.set_screen(transition)
+                        print("Текущий экран: " + view.screen.name)
+                        for cmd, transition in view.screen.commands:
+                            print(cmd.action + " " + transition.name if transition else "None")
+                        endTime = None
+                        prevRectId = rectId
 
     if rectId == 0:
-        cv2.putText(frame,"Top Left", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
+        cv2.putText(frame, "Top Left", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
     elif rectId == 1:
-        cv2.putText(frame,"Top Right", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
+        cv2.putText(frame, "Top Right", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
     elif rectId == 2:
-        cv2.putText(frame,"Bottom Left", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
+        cv2.putText(frame, "Bottom Left", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
     elif rectId == 3:
-        cv2.putText(frame,"Bottom Right", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
+        cv2.putText(frame, "Bottom Right", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
     else:
-        cv2.putText(frame,"Nothing", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
+        cv2.putText(frame, "Nothing", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
  
-    cv2.rectangle(frame, (200,200), (000,000), (0,255,0), 0)
-    cv2.rectangle(frame, (width,height), (width-200,height-200), (0,255,0), 0)
-    cv2.rectangle(frame, (200,height), (0,height-200), (0,255,0), 0)
-    cv2.rectangle(frame, (width,200), (width-200,0), (0,255,0), 0)
+    cv2.rectangle(frame, (200,200), (000,000), (0,0,255), 0)
+    cv2.rectangle(frame, (width,200), (width-200,0), (0,0,255), 0)
+    cv2.rectangle(frame, (200,height), (0,height-200), (0,0,255), 0)
+    cv2.rectangle(frame, (width,height), (width-200,height-200), (0,0,255), 0)
     cv2.imshow('Main', frame)
 
     k = cv2.waitKey(10)
