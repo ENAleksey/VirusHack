@@ -2,6 +2,7 @@ from hand_tracking import getRectIdFromHandPos
 import cv2
 import commands
 from view import View
+import time
 
 # camera = cv2.VideoCapture("http://192.168.100.12:8080/video")
 camera = cv2.VideoCapture(0)
@@ -10,15 +11,22 @@ height = int(camera.get(4))
 view = View()
 
 prevRectId = None
+currTime = None
+endTime = None
 
 isBgCaptured = 0
 bgSubThreshold = 50
 j=0
 
+
+print("\nТекущий экран: " + view.screen.name)
+for cmd, transition in view.screen.commands:
+    print(cmd.action + " " + transition.name if transition else "None")
+
 while(camera.isOpened()):
     ret, frame = camera.read()
     frame = cv2.flip(frame, 1)
-    # frame = cv2.bilateralFilter(frame, 9, 350, 350)
+    frame_out = frame
 
     # frame=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
     # if(j==0):
@@ -37,37 +45,73 @@ while(camera.isOpened()):
         # frame = cv2.GaussianBlur(frame, (5, 5), 0)
         # _, frame = cv2.threshold(frame, 127, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
 
+    screens = len(view.screen.commands)
+    colorRed = (0,0,255)
+    colorGreen = (0,255,0)
 
-    string = "\nТекущий экран: " + view.screen.name + "\n"
-    for cmd, transition in view.screen.commands:
-        string = string + cmd.action + " " + transition.name if transition else "None" + "\n"
+    if screens == 1:
+        cv2.rectangle(frame_out, (200,200), (000,000), colorGreen, 2)
+        cv2.rectangle(frame_out, (width,200), (width-200,0), colorRed, 0)
+        cv2.rectangle(frame_out, (200,height), (0,height-200), colorRed, 0)
+        cv2.rectangle(frame_out, (width,height), (width-200,height-200), colorRed, 0)
+    elif screens == 2:
+        cv2.rectangle(frame_out, (200,200), (000,000), colorGreen, 2)
+        cv2.rectangle(frame_out, (width,200), (width-200,0), colorGreen, 2)
+        cv2.rectangle(frame_out, (200,height), (0,height-200), colorRed, 0)
+        cv2.rectangle(frame_out, (width,height), (width-200,height-200), colorRed, 0)
+    elif screens == 2:
+        cv2.rectangle(frame_out, (200,200), (000,000), colorGreen, 2)
+        cv2.rectangle(frame_out, (width,200), (width-200,0), colorGreen, 2)
+        cv2.rectangle(frame_out, (200,height), (0,height-200), colorGreen, 2)
+        cv2.rectangle(frame_out, (width,height), (width-200,height-200), colorRed, 0)
+    elif screens == 2:
+        cv2.rectangle(frame_out, (200,200), (000,000), colorGreen, 2)
+        cv2.rectangle(frame_out, (width,200), (width-200,0), colorGreen, 2)
+        cv2.rectangle(frame_out, (200,height), (0,height-200), colorGreen, 2)
+        cv2.rectangle(frame_out, (width,height), (width-200,height-200), colorGreen, 2)
+    else:
+        cv2.rectangle(frame_out, (200,200), (000,000), colorRed, 0)
+        cv2.rectangle(frame_out, (width,200), (width-200,0), colorRed, 0)
+        cv2.rectangle(frame_out, (200,height), (0,height-200), colorRed, 0)
+        cv2.rectangle(frame_out, (width,height), (width-200,height-200), colorRed, 0)
+
 
     rectId = getRectIdFromHandPos(frame, width, height)
     if rectId is not None:
-        if rectId < len(view.screen.commands):
-            cmd, transition = view.screen.commands[rectId]
-            view.set_screen(transition)
-
         if rectId != prevRectId:
-            prevRectId = rectId
-            print(string)
+            # prevRectId = rectId
+            if rectId < len(view.screen.commands):
+                cmd, transition = view.screen.commands[rectId]
+                if transition:
 
-    # if rectId == 0:
-    #     cv2.putText(frame,"Top Left", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
-    # elif rectId == 1:
-    #     cv2.putText(frame,"Top Right", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
-    # elif rectId == 2:
-    #     cv2.putText(frame,"Bottom Left", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
-    # elif rectId == 3:
-    #     cv2.putText(frame,"Bottom Right", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
-    # else:
-    #     cv2.putText(frame,"Nothing", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
+                    if endTime is None:
+                        currTime = time.time()
+                        endTime = currTime + 0.5
 
-    cv2.imshow('Main', frame)
-    cv2.rectangle(frame, (200,200), (000,000), (0,255,0), 0)
-    cv2.rectangle(frame, (width,height), (width-200,height-200), (0,255,0), 0)
-    cv2.rectangle(frame, (200,height), (0,height-200), (0,255,0), 0)
-    cv2.rectangle(frame, (width,200), (width-200,0), (0,255,0), 0)
+                    if currTime < endTime:
+                        currTime = time.time()
+                    else:
+                        print()
+                        view.set_screen(transition)
+                        for cmd, transition in view.screen.commands:
+                            print(cmd.action + " " + transition.name if transition else "None")
+                        endTime = None
+                        prevRectId = rectId
+ 
+
+    if rectId == 0:
+        cv2.putText(frame_out, "Top Left", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
+    elif rectId == 1:
+        cv2.putText(frame_out, "Top Right", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
+    elif rectId == 2:
+        cv2.putText(frame_out, "Bottom Left", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
+    elif rectId == 3:
+        cv2.putText(frame_out, "Bottom Right", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
+    else:
+        cv2.putText(frame_out, "Nothing", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
+ 
+    
+    cv2.imshow('Main', frame_out)
 
     k = cv2.waitKey(10)
     if k == 27:
