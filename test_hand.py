@@ -6,8 +6,7 @@ import time
 
 
 view = View()
-handTracker = HandTracker(1)
-# camera = cv2.VideoCapture("http://192.168.100.12:8080/video")
+handTracker = HandTracker(1, True)
 camera = cv2.VideoCapture(0)
 width = int(camera.get(3))
 height = int(camera.get(4))
@@ -21,31 +20,30 @@ def renderDebugView(rectId):
     colorRed = (0,0,255)
     colorGreen = (0,255,0)
 
-    if screens == 1:
+    cv2.rectangle(camera_debug, (200,200), (000,000), colorRed, 0)
+    cv2.rectangle(camera_debug, (width,200), (width-200,0), colorRed, 0)
+    cv2.rectangle(camera_debug, (200,height), (0,height-200), colorRed, 0)
+    cv2.rectangle(camera_debug, (width,height), (width-200,height-200), colorRed, 0)
+
+    if screens > 0:
+        cmd, transition = view.screen.commands[0]
+        cv2.putText(camera_debug, cmd.action, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
         cv2.rectangle(camera_debug, (200,200), (000,000), colorGreen, 2)
-        cv2.rectangle(camera_debug, (width,200), (width-200,0), colorRed, 0)
-        cv2.rectangle(camera_debug, (200,height), (0,height-200), colorRed, 0)
-        cv2.rectangle(camera_debug, (width,height), (width-200,height-200), colorRed, 0)
-    elif screens == 2:
-        cv2.rectangle(camera_debug, (200,200), (000,000), colorGreen, 2)
+
+    if screens > 1:
+        cmd, transition = view.screen.commands[1]
+        cv2.putText(camera_debug, cmd.action, (50+width-200, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
         cv2.rectangle(camera_debug, (width,200), (width-200,0), colorGreen, 2)
-        cv2.rectangle(camera_debug, (200,height), (0,height-200), colorRed, 0)
-        cv2.rectangle(camera_debug, (width,height), (width-200,height-200), colorRed, 0)
-    elif screens == 2:
-        cv2.rectangle(camera_debug, (200,200), (000,000), colorGreen, 2)
-        cv2.rectangle(camera_debug, (width,200), (width-200,0), colorGreen, 2)
+
+    if screens > 2:
+        cmd, transition = view.screen.commands[2]
+        cv2.putText(camera_debug, cmd.action, (50, 50+height-200), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
         cv2.rectangle(camera_debug, (200,height), (0,height-200), colorGreen, 2)
-        cv2.rectangle(camera_debug, (width,height), (width-200,height-200), colorRed, 0)
-    elif screens == 2:
-        cv2.rectangle(camera_debug, (200,200), (000,000), colorGreen, 2)
-        cv2.rectangle(camera_debug, (width,200), (width-200,0), colorGreen, 2)
-        cv2.rectangle(camera_debug, (200,height), (0,height-200), colorGreen, 2)
+
+    if screens > 3:
+        cmd, transition = view.screen.commands[3]
+        cv2.putText(camera_debug, cmd.action, (50+width-200, 50+height-200), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
         cv2.rectangle(camera_debug, (width,height), (width-200,height-200), colorGreen, 2)
-    else:
-        cv2.rectangle(camera_debug, (200,200), (000,000), colorRed, 0)
-        cv2.rectangle(camera_debug, (width,200), (width-200,0), colorRed, 0)
-        cv2.rectangle(camera_debug, (200,height), (0,height-200), colorRed, 0)
-        cv2.rectangle(camera_debug, (width,height), (width-200,height-200), colorRed, 0)
 
     if rectId == 0:
         cv2.putText(camera_debug, "Top Left", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)

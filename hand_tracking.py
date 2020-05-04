@@ -3,8 +3,9 @@ import math
 
 
 class HandTracker:
-    def __init__(self, maxDefects):
+    def __init__(self, maxDefects, debug):
         self.maxDefects = maxDefects
+        self.debug = debug
     
     def isHandInRect(self, frame, x, y, w, h):
         crop_img = frame[y:y+h, x:x+w]
@@ -13,7 +14,8 @@ class HandTracker:
         blurred = cv2.GaussianBlur(grey, (35, 35), 0)
         _, thresh1 = cv2.threshold(blurred, 127, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
 
-        cv2.imshow(str("{} {} {} {}").format(x, y, w, h), thresh1)
+        if self.debug:
+            cv2.imshow(str("{} {} {} {}").format(x, y, w, h), thresh1)
 
         contours, hierarchy = cv2.findContours(thresh1.copy(),cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         # contours, hierarchy = cv2.findContours(thresh1.copy(),cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
