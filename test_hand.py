@@ -59,10 +59,6 @@ def renderDebugView(rectId):
     cv2.imshow('Camera', camera_debug)
 
 
-print("\nТекущий экран: " + view.screen.name)
-for cmd, transition in view.screen.commands:
-    print(cmd.action + " - " + transition.name if transition else "None")
-
 while(camera.isOpened()):
     ret, frame = camera.read()
     frame = cv2.flip(frame, 1)
@@ -89,10 +85,7 @@ while(camera.isOpened()):
                     if currTime < endTime:
                         currTime = time.time()
                     else:
-                        print()
                         view.set_screen(transition)
-                        for cmd, transition in view.screen.commands:
-                            print(cmd.action + " - " + transition.name if transition else "None")
                         endTime = None
                         prevRectId = rectId
 
