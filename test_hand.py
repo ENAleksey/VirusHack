@@ -10,10 +10,16 @@ height = int(camera.get(4))
 view = View()
 
 prevRectId = None
+prevScreen = None
 
 isBgCaptured = 0
 bgSubThreshold = 50
 j=0
+
+
+print("\nТекущий экран: " + view.screen.name)
+for cmd, transition in view.screen.commands:
+    print(cmd.action + " " + transition.name if transition else "None")
 
 while(camera.isOpened()):
     ret, frame = camera.read()
@@ -37,20 +43,18 @@ while(camera.isOpened()):
         # frame = cv2.GaussianBlur(frame, (5, 5), 0)
         # _, frame = cv2.threshold(frame, 127, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
 
-
-    string = "\nТекущий экран: " + view.screen.name + "\n"
-    for cmd, transition in view.screen.commands:
-        string = string + cmd.action + " " + transition.name if transition else "None" + "\n"
-
     rectId = getRectIdFromHandPos(frame, width, height)
     if rectId is not None:
-        if rectId < len(view.screen.commands):
-            cmd, transition = view.screen.commands[rectId]
-            view.set_screen(transition)
-
         if rectId != prevRectId:
             prevRectId = rectId
-            print(string)
+            if rectId < len(view.screen.commands):
+                cmd, transition = view.screen.commands[rectId]
+                if transition:
+                    print()
+                    view.set_screen(transition)
+                    print("Текущий экран: " + view.screen.name)
+                    for cmd, transition in view.screen.commands:
+                        print(cmd.action + " " + transition.name if transition else "None")
 
     # if rectId == 0:
     #     cv2.putText(frame,"Top Left", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
