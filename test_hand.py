@@ -56,22 +56,22 @@ while(camera.isOpened()):
                     for cmd, transition in view.screen.commands:
                         print(cmd.action + " " + transition.name if transition else "None")
 
-    # if rectId == 0:
-    #     cv2.putText(frame,"Top Left", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
-    # elif rectId == 1:
-    #     cv2.putText(frame,"Top Right", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
-    # elif rectId == 2:
-    #     cv2.putText(frame,"Bottom Left", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
-    # elif rectId == 3:
-    #     cv2.putText(frame,"Bottom Right", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
-    # else:
-    #     cv2.putText(frame,"Nothing", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
-
-    cv2.imshow('Main', frame)
+    if rectId == 0:
+        cv2.putText(frame,"Top Left", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
+    elif rectId == 1:
+        cv2.putText(frame,"Top Right", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
+    elif rectId == 2:
+        cv2.putText(frame,"Bottom Left", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
+    elif rectId == 3:
+        cv2.putText(frame,"Bottom Right", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
+    else:
+        cv2.putText(frame,"Nothing", (250, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2, 2)
+ 
     cv2.rectangle(frame, (200,200), (000,000), (0,255,0), 0)
     cv2.rectangle(frame, (width,height), (width-200,height-200), (0,255,0), 0)
     cv2.rectangle(frame, (200,height), (0,height-200), (0,255,0), 0)
     cv2.rectangle(frame, (width,200), (width-200,0), (0,255,0), 0)
+    cv2.imshow('Main', frame)
 
     k = cv2.waitKey(10)
     if k == 27:
