@@ -71,23 +71,25 @@ while(camera.isOpened()):
 
     if rectId is None:
         prevRectId = None
+        endTime = None
     else:
         if rectId != prevRectId:
-            # prevRectId = rectId
             if rectId < len(view.screen.commands):
                 cmd, transition = view.screen.commands[rectId]
-                if transition:
-                    # Delay
-                    if endTime is None:
-                        currTime = time.time()
-                        endTime = currTime + 0.5
 
-                    if currTime < endTime:
-                        currTime = time.time()
-                    else:
-                        view.set_screen(transition)
-                        endTime = None
-                        prevRectId = rectId
+                # Delay
+                if endTime is None:
+                    currTime = time.time()
+                    endTime = currTime + 0.5
+
+                if currTime < endTime:
+                    currTime = time.time()
+                else:
+                    if cmd:
+                        print(cmd.get_message())
+                    view.set_screen(transition)
+                    endTime = None
+                    prevRectId = rectId
 
     key = cv2.waitKey(10)
     if key == 27:
