@@ -77,6 +77,14 @@ paymentСanselScreen = Screen(
     'screens/26.jpg'
 )
 
+voiceScreen = Screen(
+    'Слушаем',
+    'screens/28.jpg'
+)
+
+voiceScreen.add_commands([
+    (commands.back, addItemScreen),
+])
 
 startScreen.add_commands([
     # (None, None), # ????? Сдвинуть кнопку start в другой угол
@@ -86,7 +94,7 @@ startScreen.add_commands([
 addItemScreen.add_commands([
     (commands.cancel, cancelScreen),
     (commands.payment, addBagScreen),
-    (commands.addItem, addItemScreen)
+    (commands.addItem, voiceScreen)
     # (commands.deletePosition, None),
     # (commands.deleteAll, None),
     # (commands.subTotal, addBagScreen),
@@ -154,7 +162,7 @@ class View:
         self.im = cv2.imread(self.screen.image)
         self._loop = True
         self._changed = True
-        Thread(target=self._show_image).start()
+        # Thread(target=self._show_image).start()
 
     def _show_image(self):
         while self._loop:
@@ -169,6 +177,7 @@ class View:
             self.screen = screen
             self._changed = True
             print('Screen changed to "{}"'.format(screen.name))
+            self.im = cv2.imread(self.screen.image)
 
     def destroy(self):
         self._loop = False

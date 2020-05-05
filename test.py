@@ -68,7 +68,15 @@ while True:
                         if cmd.required:
                             for j in range(i, len(phrase)):
                                 if len(phrase[j]) >= 3 and get_product_id(phrase[j]) != -1:
-                                    print(cmd.get_message(itemCode=get_product_id(phrase[j])))
+                                    if cmd.action == 'addItem':
+                                        required = {"itemCode": get_product_id(phrase[j])}
+                                        print(cmd.get_message(required=required))
+                                    elif cmd.action == 'addLoyalty':
+                                        pass
+                                    elif cmd.action == 'deletePosition':
+                                        pass
+                                    elif cmd.action == 'payment':
+                                        pass
                         else:
                             print(cmd.get_message())
                     view.set_screen(transition)
