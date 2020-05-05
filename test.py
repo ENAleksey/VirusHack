@@ -24,6 +24,7 @@ product_codes = {
 
 # View & Screen example
 view = View()
+stream = open('queue.json', 'wt')
 p = pyaudio.PyAudio()
 CHANNELS = 1
 RATE = 16000
@@ -62,15 +63,14 @@ while True:
     if phrase:
         for i, word in enumerate(phrase):
             for cmd, transition in view.screen.commands:
-                print(cmd, transition, cmd.recognize(word))
                 if cmd.recognize(word):
                     if cmd.pushable:
                         if cmd.required:
                             for j in range(i, len(phrase)):
                                 if len(phrase[j]) >= 3 and get_product_id(phrase[j]) != -1:
-                                    print(cmd.get_message())
+                                    print(cmd.get_message(itemCode=get_product_id(phrase[j])))
                         else:
-                            print(cmd.get_message())  # we can write to a file or to a queue
+                            print(cmd.get_message())
                     view.set_screen(transition)
                     break
         phrase = []

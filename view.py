@@ -85,8 +85,8 @@ startScreen.add_commands([
 
 addItemScreen.add_commands([
     (commands.cancel, cancelScreen),
-    (commands.payment, addBagScreen)
-    # (commands.addItem, None),
+    (commands.payment, addBagScreen),
+    (commands.addItem, addItemScreen)
     # (commands.deletePosition, None),
     # (commands.deleteAll, None),
     # (commands.subTotal, addBagScreen),
