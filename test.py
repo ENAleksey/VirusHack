@@ -1,19 +1,25 @@
 from vosk import Model, KaldiRecognizer
 import pyaudio
 import json
+from fuzzywuzzy import fuzz
 
 import commands
 from view import View
 
-# command usage example
-if commands.addItem.recognize('добавить'):
-    stream = open('queue.json', 'wt')
-    m1 = commands.addItem.get_message(itemCode=1201249)
-    m2 = commands.addItem.get_message(itemCode=42613, quantity=3)
+product_codes = {
+    "яблоко": 123,
+    "бананы": 786
+}
 
-    stream.write(str(m1))  # use json.dump() instead of str()
-    stream.write('\n')
-    stream.write(str(m2))
+# command usage example
+# if commands.addItem.recognize('добавить'):
+#     stream = open('queue.json', 'wt')
+#     m1 = commands.addItem.get_message(itemCode=1201249)
+#     m2 = commands.addItem.get_message(itemCode=42613, quantity=3)
+#
+#     stream.write(str(m1))  # use json.dump() instead of str()
+#     stream.write('\n')
+#     stream.write(str(m2))
 
 
 # View & Screen example
@@ -33,24 +39,38 @@ model = Model("models/ru")
 rec = KaldiRecognizer(model, RATE)
 phrase = []
 
+
+def get_product_id(name):
+    for key in product_codes:
+        if fuzz.ratio(key, name) >= 70:
+            return product_codes[key]
+    return -1
+
+
 while True:
     data = audio_stream.read(CHUNK)
     if len(data) == 0:
         break
     if rec.AcceptWaveform(data):
         temp = rec.Result()
+        print(temp)
         if temp:
             temp = json.loads(temp)
             phrase = temp['text'].split()
     else:
         print(rec.PartialResult())
     if phrase:
-        for word in phrase:
+        for i, word in enumerate(phrase):
             for cmd, transition in view.screen.commands:
                 print(cmd, transition, cmd.recognize(word))
                 if cmd.recognize(word):
                     if cmd.pushable:
-                        print(cmd.get_message())  # we can write to a file or to a queue
+                        if cmd.required:
+                            for j in range(i, len(phrase)):
+                                if len(phrase[j]) >= 3 and get_product_id(phrase[j]) != -1:
+                                    print(cmd.get_message())
+                        else:
+                            print(cmd.get_message())  # we can write to a file or to a queue
                     view.set_screen(transition)
                     break
         phrase = []

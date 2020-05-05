@@ -79,7 +79,7 @@ paymentСanselScreen = Screen(
 
 
 startScreen.add_commands([
-    (None, None), # ????? Сдвинуть кнопку start в другой угол
+    # (None, None), # ????? Сдвинуть кнопку start в другой угол
     (commands.start, addItemScreen)
 ])
 
